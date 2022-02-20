@@ -30,10 +30,11 @@ var thisProductRegFile = File("~/Documents/Envato Registration/"+productString+"
 // formatting {"Product Name":"Credit Smith","key":""}
 if(thisProductRegFile.exists) {
     thisProductRegFile.open("r");
-    var regData = JSON.parse(thisProductRegFile.read())["key"];
+    var regData = JSON.parse(thisProductRegFile.read());
     thisProductRegFile.close();
     if(regData["username"] != "") {
-    if(envatoLicenseCheck(regData, productString, regData["username"]) != null) {
+    if(envatoLicenseCheck(regData["key"], productString, regData["username"]) != null) {
+        alert("you already registered");
         // launch script
     }
     }
@@ -84,6 +85,7 @@ registerButton.onClick = function() {
 
 function envatoLicenseCheck(purchaseCode, searchTerm, username) {
     var envatoResponse = "";
+    
     try {
       envatoResponse = system.callSystem('curl -H "Authorization: Bearer '+tk+'" https://api.envato.com/v1/market/private/user/verify-purchase:'+purchaseCode+'.json');
     } catch (e) {
@@ -93,7 +95,7 @@ function envatoLicenseCheck(purchaseCode, searchTerm, username) {
     }
 
 envatoResponse = JSON.parse(envatoResponse.slice(envatoResponse.indexOf("{"),envatoResponse.length));
-//alert(JSON.stringify(envatoResponse));
+
 if(envatoResponse["verify-purchase"]["item_id"] == null ){
     return null;
     } else {
